@@ -11,11 +11,6 @@ return new class extends Migration
         Schema::create('mind_people', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('mind_group_id')
-                ->nullable()
-                ->constrained('mind_groups')
-                ->nullOnDelete();
-
             $table->string('name');
 
             $table->string('nickname')
@@ -25,6 +20,15 @@ return new class extends Migration
                 ->nullable();
 
             $table->text('notes')
+                ->nullable();
+
+            $table->unsignedTinyInteger('birth_day')
+                ->nullable();
+
+            $table->unsignedTinyInteger('birth_month')
+                ->nullable();
+
+            $table->unsignedSmallInteger('birth_year')
                 ->nullable();
 
             $table->timestamps();

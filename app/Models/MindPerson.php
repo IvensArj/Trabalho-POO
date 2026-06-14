@@ -10,15 +10,19 @@ class MindPerson extends Model
     use HasFactory;
 
     protected $fillable = [
-        'mind_group_id',
         'name',
         'nickname',
         'photo',
         'notes',
+        'birth_day',
+        'birth_month',
+        'birth_year',
     ];
-
-    public function group()
+    public function groups()
     {
-        return $this->belongsTo(MindGroup::class, 'mind_group_id');
+        return $this->belongsToMany(
+            MindGroup::class,
+            'mind_group_mind_person'
+        );
     }
 }

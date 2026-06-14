@@ -13,10 +13,14 @@ class MindGroup extends Model
         'name',
         'slug',
         'description',
+        'icon',
     ];
 
     public function people()
     {
-        return $this->hasMany(MindPerson::class);
+        return $this->belongsToMany(
+            MindPerson::class,
+            'mind_group_mind_person'
+        );
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\MindGroupController;
 use App\Http\Controllers\MindPersonController;
 use App\Http\Controllers\ProfileController;
@@ -18,10 +17,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/mind-social', [MindPersonController::class, 'index'])
-    ->name('mind-social.index');
-    Route::resource('mind-people', MindPersonController::class);
-    Route::resource('mind-groups', MindGroupController::class);
+    Route::get('/mind-social', [MindPersonController::class, 'index'])->name('mind-social.index');
+
+    Route::post('/mind-people', [MindPersonController::class, 'store'])->name('mind-people.store');
+    Route::put('/mind-people/{id}', [MindPersonController::class, 'update'])->name('mind-people.update');
+    Route::delete('/mind-people/{id}', [MindPersonController::class, 'destroy'])->name('mind-people.destroy');
+
+    Route::post('/mind-groups', [MindGroupController::class, 'store'])->name('mind-groups.store');
+    Route::put('/mind-groups/{id}', [MindGroupController::class, 'update'])->name('mind-groups.update');
+    Route::delete('/mind-groups/{id}', [MindGroupController::class, 'destroy'])->name('mind-groups.destroy');
 });
 
 require __DIR__.'/auth.php';

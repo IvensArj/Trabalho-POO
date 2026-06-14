@@ -10,6 +10,16 @@
     {{-- Figtree com todos os pesos --}}
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+
+        document.addEventListener('alpine:navigated', () => {
+            lucide.createIcons();
+        });
+    </script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
