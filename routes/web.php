@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/mind-people', [MindPersonController::class, 'store'])->name('mind-people.store');
     Route::put('/mind-people/{id}', [MindPersonController::class, 'update'])->name('mind-people.update');
     Route::delete('/mind-people/{id}', [MindPersonController::class, 'destroy'])->name('mind-people.destroy');
+    Route::get('/mind-social/fisheye', [MindPersonController::class, 'fisheye'])->name('mind-social.fisheye');
 
     Route::post('/mind-groups', [MindGroupController::class, 'store'])->name('mind-groups.store');
     Route::put('/mind-groups/{id}', [MindGroupController::class, 'update'])->name('mind-groups.update');

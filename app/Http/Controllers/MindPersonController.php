@@ -7,16 +7,19 @@ use App\Models\MindPerson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\Support\Facades\Validator;
 
 class MindPersonController extends Controller
 {
     public function index()
     {
-        $people = MindPerson::with('groups')
+        $people = MindPerson::where('user_id', auth()->id())
+            ->with('groups')
             ->latest()
             ->get();
 
-        $groups = MindGroup::withCount('people')
+        $groups = MindGroup::where('user_id', auth()->id())
+            ->withCount('people')
             ->orderBy('name')
             ->get();
 
@@ -25,7 +28,7 @@ class MindPersonController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
             'nickname' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
@@ -46,12 +49,16 @@ class MindPersonController extends Controller
             'birth_year.between' => 'O ano do aniversário é inválido.',
         ]);
 
+        if ($validator->fails()) {
+            return back()->withErrors($validator, 'person')->withInput();
+        }
+
+        $validated = $validator->validated();
+
         $photoPath = null;
 
         if ($request->hasFile('photo')) {
-            $photoPath = $this->savePhoto(
-                $request->file('photo')
-            );
+            $photoPath = $this->savePhoto($request->file('photo'));
         }
 
         $person = MindPerson::create([
@@ -71,9 +78,9 @@ class MindPersonController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $person = MindPerson::findOrFail($id);
+        $person = MindPerson::where('user_id', auth()->id())->findOrFail($id);
 
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
             'nickname' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
@@ -94,6 +101,12 @@ class MindPersonController extends Controller
             'birth_year.between' => 'O ano do aniversário é inválido.',
         ]);
 
+        if ($validator->fails()) {
+            return back()->withErrors($validator, 'person')->withInput();
+        }
+
+        $validated = $validator->validated();
+
         $data = [
             'name' => $validated['name'],
             'nickname' => $validated['nickname'] ?? null,
@@ -107,10 +120,7 @@ class MindPersonController extends Controller
             if ($person->photo) {
                 Storage::disk('public')->delete($person->photo);
             }
-
-            $data['photo'] = $this->savePhoto(
-                $request->file('photo')
-            );
+            $data['photo'] = $this->savePhoto($request->file('photo'));
         }
 
         $person->update($data);
@@ -121,7 +131,7 @@ class MindPersonController extends Controller
 
     public function destroy(string $id)
     {
-        $person = MindPerson::findOrFail($id);
+        $person = MindPerson::where('user_id', auth()->id())->findOrFail($id);
 
         if ($person->photo) {
             Storage::disk('public')->delete($person->photo);
@@ -148,5 +158,18 @@ class MindPersonController extends Controller
         );
 
         return 'mind-people/' . $filename;
+    }
+
+    public function fisheye()
+    {
+        $people = MindPerson::where('user_id', auth()->id())
+            ->with('groups')
+            ->orderBy('name')
+            ->get();
+
+        return view(
+            'mindsocial.fisheye',
+            compact('people')
+        );
     }
 }

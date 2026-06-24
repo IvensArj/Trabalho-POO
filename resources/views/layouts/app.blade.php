@@ -187,5 +187,6 @@
         {{ $slot }}
     </main>
 
+    <x-toast :exclude-error-routes="['mind-groups.*']" />
 </body>
 </html>

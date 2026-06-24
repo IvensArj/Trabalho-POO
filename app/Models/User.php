@@ -46,4 +46,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function mindPeople()
+    {
+        return $this->hasMany(MindPerson::class);
+    }
+
+    public function mindGroups()
+    {
+        return $this->hasMany(MindGroup::class);
+    }
 }

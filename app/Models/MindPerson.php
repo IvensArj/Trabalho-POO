@@ -17,7 +17,18 @@ class MindPerson extends Model
         'birth_day',
         'birth_month',
         'birth_year',
+        'user_id',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            if (auth()->check()) {
+                $model->user_id = auth()->id();
+            }
+        });
+    }
+
     public function groups()
     {
         return $this->belongsToMany(
