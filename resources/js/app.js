@@ -1,9 +1,11 @@
 import './bootstrap';
-
-import Alpine from 'alpinejs';
-
-window.Alpine = Alpine;
-
-Alpine.start();
-
 import './fisheye';
+import * as lucide from 'lucide';
+
+window.createLucideIcons = () => {
+    lucide.createIcons({ icons: lucide.icons });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    window.createLucideIcons();
+});

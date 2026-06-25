@@ -4,42 +4,35 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Support\Facades\DB;
-
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::disableForeignKeyConstraints();
-        
-        DB::table('mind_group_mind_person')->truncate();
-        DB::table('mind_people')->truncate();
-        DB::table('mind_groups')->truncate();
+        // Verifica se a coluna user_id existe em mind_people
+        if (!Schema::hasColumn('mind_people', 'user_id')) {
+            Schema::table('mind_people', function (Blueprint $table) {
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            });
+        }
 
-        Schema::enableForeignKeyConstraints();
-
-        Schema::table('mind_people', function (Blueprint $table) {
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->index('user_id');
-        });
-
-        Schema::table('mind_groups', function (Blueprint $table) {
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->index('user_id');
-        });
+        // Se houver outras tabelas (mind_groups, etc.), faça o mesmo
+        if (!Schema::hasColumn('mind_groups', 'user_id')) {
+            Schema::table('mind_groups', function (Blueprint $table) {
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            });
+        }
     }
 
     public function down(): void
     {
+        // Opcional: remover as colunas
         Schema::table('mind_people', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
-            $table->dropIndex(['user_id']);
             $table->dropColumn('user_id');
         });
 
         Schema::table('mind_groups', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
-            $table->dropIndex(['user_id']);
             $table->dropColumn('user_id');
         });
     }

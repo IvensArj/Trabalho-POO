@@ -27,7 +27,13 @@
         </div>
 
         <div class="overflow-y-auto flex-1">
-            <form method="POST" action="{{ route('mind-people.store') }}" enctype="multipart/form-data">
+            <form
+                method="POST"
+                action="{{ route('mind-people.store') }}"
+                enctype="multipart/form-data"
+                x-data="{ submitting: false }"
+                @submit="submitting = true"
+            >
                 @csrf
 
                 <div class="p-6 space-y-6">
@@ -223,7 +229,10 @@
                                             class="w-3.5 h-3.5 rounded border-white/20 bg-black/50 text-white focus:ring-0 focus:ring-offset-0 shrink-0"
                                         >
                                         <div class="flex items-center gap-1.5 min-w-0">
-                                            <i data-lucide="{{ $group->icon }}" class="w-3.5 h-3.5 text-zinc-600 shrink-0"></i>
+                                            <span
+                                                class="w-3.5 h-3.5 inline-block text-zinc-600 shrink-0"
+                                                data-lucide="{{ $group->icon }}"
+                                            ></span>
                                             <span class="truncate">{{ $group->name }}</span>
                                         </div>
                                     </label>
@@ -275,7 +284,8 @@
 
                     <button
                         type="submit"
-                        class="flex-1 py-2.5 bg-white text-black font-bold text-sm hover:scale-[1.02] transition rounded-lg shadow-lg"
+                        :disabled="submitting"
+                        class="flex-1 py-2.5 bg-white text-black font-bold text-sm hover:scale-[1.02] transition rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 inline-flex items-center justify-center gap-2"
                     >
                         Salvar Pessoa
                     </button>

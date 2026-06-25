@@ -4,7 +4,7 @@
     'icons' => ['users', 'heart', 'gamepad-2', 'book-open', 'briefcase', 'music', 'camera', 'home', 'star'],
 ])
 
-<div x-data="{ icon: @js($selected) }" x-init="lucide.createIcons()" @click="lucide.createIcons()">
+<div x-data="{ icon: @js($selected) }">
     <input type="hidden" name="{{ $name }}" x-model="icon">
 
     <label class="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold block mb-2">Ícone</label>

@@ -1,0 +1,101 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mind_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - vendor_data:/var/www/html/vendor
+      - build_data:/var/www/html/public/build
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - mind
+
+  webserver:
+    image: nginx:stable-alpine
+    container_name: mind_nginx
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8000}:80"
+    volumes:
+      - ./:/var/www/html
+      - build_data:/var/www/html/public/build 
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - app
+    networks:
+      - mind
+
+  db:
+    image: mysql:8.0
+    container_name: mind_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-trabalho_poo}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+      MYSQL_USER: ${DB_USERNAME:-atenas}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+    ports:
+      - "${FORWARD_DB_PORT:-3306}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - mind
+
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mind_queue
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - vendor_data:/var/www/html/vendor
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      app:
+        condition: service_started
+    entrypoint: ["entrypoint.sh"]
+    command: ["php", "artisan", "queue:work", "--tries=3", "--sleep=3"]
+    networks:
+      - mind
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: mind_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_USER: ${DB_USERNAME:-atenas}
+      PMA_PASSWORD: ${DB_PASSWORD:-secret}
+    ports:
+      - "${FORWARD_PHPMYADMIN_PORT:-8080}:80"
+    depends_on:
+      - db
+    networks:
+      - mind
+
+networks:
+  mind:
+    driver: bridge
+
+volumes:
+  db_data:
+  vendor_data:
+  build_data: 

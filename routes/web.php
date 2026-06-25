@@ -1,7 +1,10 @@
 <?php
+
 use App\Http\Controllers\MindGroupController;
+use App\Http\Controllers\MindCalendarController;
 use App\Http\Controllers\MindPersonController;
 use App\Http\Controllers\ProfileController;
+use App\Livewire\MindCalendar\Index as MindCalendarIndex;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -27,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/mind-groups', [MindGroupController::class, 'store'])->name('mind-groups.store');
     Route::put('/mind-groups/{id}', [MindGroupController::class, 'update'])->name('mind-groups.update');
     Route::delete('/mind-groups/{id}', [MindGroupController::class, 'destroy'])->name('mind-groups.destroy');
+
+    Route::get('/mind-calendar', [App\Http\Controllers\MindCalendarController::class, 'index'])->name('mind-calendar.index');
 });
 
 require __DIR__.'/auth.php';

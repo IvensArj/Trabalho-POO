@@ -49,13 +49,16 @@
                     :action="`/mind-people/${selectedPerson.id}`"
                     method="POST"
                     onsubmit="return confirm('Excluir esta pessoa? Esta ação não poderá ser desfeita.')"
+                    x-data="{ submitting: false }"
+                    @submit="submitting = true"
                 >
                     @csrf
                     @method('DELETE')
 
                     <button
                         type="submit"
-                        class="text-zinc-500 hover:text-red-400 bg-white/[0.03] hover:bg-red-500/10 rounded-lg transition p-2"
+                        :disabled="submitting"
+                        class="text-zinc-500 hover:text-red-400 bg-white/[0.03] hover:bg-red-500/10 rounded-lg transition p-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Excluir pessoa"
                     >
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -82,7 +85,15 @@
             </div>
         </div>
 
-        <form :action="`/mind-people/${selectedPerson.id}`" id="edit-person-form" method="POST" enctype="multipart/form-data" class="space-y-5">
+        <form
+            :action="`/mind-people/${selectedPerson.id}`"
+            id="edit-person-form"
+            method="POST"
+            enctype="multipart/form-data"
+            class="space-y-5"
+            x-data="{ submitting: false }"
+            @submit="submitting = true"
+        >
             @csrf
             @method('PUT')
 
@@ -170,7 +181,11 @@
             </div>
 
             <div class="pt-3">
-                <button type="submit" class="w-full px-5 py-3 bg-white text-black font-semibold text-sm hover:scale-[1.02] transition rounded-lg shadow-lg">
+                <button
+                    type="submit"
+                    :disabled="submitting"
+                    class="w-full px-5 py-3 bg-white text-black font-semibold text-sm hover:scale-[1.02] transition rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 inline-flex items-center justify-center gap-2"
+                >
                     Salvar Alterações
                 </button>
             </div>

@@ -56,4 +56,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(MindGroup::class);
     }
+
+    public function mindEvents(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(\App\Models\MindEvent::class);
+    }
 }

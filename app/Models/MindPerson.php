@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class MindPerson extends Model
 {
@@ -35,5 +36,12 @@ class MindPerson extends Model
             MindGroup::class,
             'mind_group_mind_person'
         );
+    }
+
+    public function getPhotoUrlAttribute(): ?string
+    {
+        return $this->photo
+            ? Storage::disk('public')->url($this->photo)
+            : null;
     }
 }

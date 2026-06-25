@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\MindGroup;
@@ -16,10 +17,19 @@ class MindGroupController extends Controller
 
     public function store(Request $request)
     {
+        $userId = auth()->id();
+
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255', 'unique:mind_groups,name'],
+            // Unicidade agora é por usuário — evita colisão entre contas diferentes
+            // e elimina a race condition do duplo-clique (índice composto no schema).
+            'name' => [
+                'required', 'string', 'max:255',
+                Rule::unique('mind_groups', 'name')->where('user_id', $userId),
+            ],
             'description' => ['nullable', 'string'],
             'icon' => ['required', 'in:users,heart,gamepad-2,book-open,briefcase,music,camera,home,star'],
+        ], [
+            'name.unique' => 'Você já tem um grupo com este nome.',
         ]);
 
         if ($validator->fails()) {
@@ -28,11 +38,11 @@ class MindGroupController extends Controller
 
         $validated = $validator->validated();
 
-        MindGroup::create([
-            'name' => $validated['name'],
-            'slug' => Str::slug($validated['name'] . '-' . Str::random(6)),
+        $group = MindGroup::create([
+            'name'        => $validated['name'],
+            'slug'        => Str::slug($validated['name']) . '-' . Str::lower(Str::random(8)),
             'description' => $validated['description'] ?? null,
-            'icon' => $validated['icon'],
+            'icon'        => $validated['icon'],
         ]);
 
         return back()->with('success', 'Grupo criado com sucesso.');
@@ -40,12 +50,21 @@ class MindGroupController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $group = MindGroup::where('user_id', auth()->id())->findOrFail($id);
+        $userId = auth()->id();
+
+        $group = MindGroup::where('user_id', $userId)->findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255', Rule::unique('mind_groups', 'name')->ignore($group->id)],
+            'name' => [
+                'required', 'string', 'max:255',
+                Rule::unique('mind_groups', 'name')
+                    ->where('user_id', $userId)
+                    ->ignore($group->id),
+            ],
             'description' => ['nullable', 'string'],
             'icon' => ['required', 'in:users,heart,gamepad-2,book-open,briefcase,music,camera,home,star'],
+        ], [
+            'name.unique' => 'Você já tem um grupo com este nome.',
         ]);
 
         if ($validator->fails()) {

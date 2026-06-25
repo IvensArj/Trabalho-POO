@@ -13,15 +13,17 @@ return new class extends Migration
 
             $table->string('name');
 
-            $table->string('slug')
-                ->unique();
+            // Slug não tem unique aqui — a unicidade real é (user_id, name)
+            // e o índice composto é adicionado em migration posterior.
+            // O app gera sufixo aleatório para evitar colisão entre usuários.
+            $table->string('slug');
 
             $table->text('description')
                 ->nullable();
 
             $table->string('icon')
                 ->default('users');
-                
+
             $table->timestamps();
         });
     }

@@ -27,7 +27,7 @@
             <div class="max-w-7xl mx-auto px-8 w-full">
 
                 {{-- Header --}}
-                <div class="flex justify-between items-center mb-24">
+                <div class="flex justify-between items-center mb-6">
 
                     <span class="text-sm font-bold">
                         <?= date('M'); ?>

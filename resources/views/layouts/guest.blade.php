@@ -16,5 +16,5 @@
     <body class="bg-black text-white antialiased overflow-x-hidden">
         {{ $slot }}
     </body>
-    
+    @livewireScripts
 </html>
